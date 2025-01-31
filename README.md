@@ -29,8 +29,9 @@
 <!-- Construir alguns protótipos para a aplicação, disponibilizá-los no Github e descrever o que foi considerado. //-->
 ### 4. Protótipo
 
-  Protótipos para as páginas (descrever quais páginas) foram elaborados, e podem ser encontrados em...
-
+  Páginas a serem desenvolvidas: 
+  - Página Principal : Tela inicial com a listagem geral de séries e filmes cadastrados.
+  - Página de Assinaturas : Lista de assinaturas de serviços de streaming, com informações sobre custo mensal e dados de vencimento
 ### 5. Referências
 
-  Referências podem ser incluídas, caso necessário. Utilize o padrão ABNT.
+  Até o presente momento, não foram utilizadas referências para o desenvolvimento deste trabalho.
