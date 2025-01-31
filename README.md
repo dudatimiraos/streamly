@@ -21,7 +21,10 @@
 <!-- Apresentar restrições de funcionalidades e de escopo. -->
 ### 3. Restrições
 
-  Neste trabalho não serão considerados ...
+  Neste trabalho não serão considerados:
+  - Integrações automáticas com APIs de serviços de streaming, como Netflix ou Prime Video.
+  - Funcionalidades avançadas de recomendação de séries e filmes com base em preferências.
+  - Controle de múltiplos usuários na mesma conta.
 
 <!-- Construir alguns protótipos para a aplicação, disponibilizá-los no Github e descrever o que foi considerado. //-->
 ### 4. Protótipo
