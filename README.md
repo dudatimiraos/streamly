@@ -6,17 +6,17 @@
 
 ### Resumo
 
-  (Apresentar um breve resumo sobre o seu trabalho, indicando o contexto e as principais funcionalidades.)
+  Um sistema web para organizar séries e filmes assistidos e controlar assinaturas de serviços de streaming. Os usuários poderão registrar conteúdos assistidos e acompanhar suas assinaturas, com foco em centralizar essas informações em um único local.
 
 <!-- Apresentar o tema. -->
 ### 1. Tema
 
-  O trabalho final tem como tema o desenvolvimento de ...
+  O trabalho final tem como tema o desenvolvimento de um Sistema de Gerenciamento de Assinaturas de Streamings, Séries e Filmes assistidos.
 
 <!-- Descrever e limitar o escopo da aplicação. -->
 ### 2. Escopo
 
-  Este projeto terá as seguintes funcionalidades...
+  Este projeto terá as seguintes funcionalidades: o cadastro e gerenciamento de séries/filmes e assinaturas, com funcionalidades básicas de CRUD e algumas integrações simples, como a exibição de listas e notificações de vencimento de assinaturas.
 
 <!-- Apresentar restrições de funcionalidades e de escopo. -->
 ### 3. Restrições
