@@ -1,37 +1,132 @@
-# **CSI606-2024-02 - Remoto - Proposta de Trabalho Final**
+# Streamly - Gerenciador de Assinaturas e Conteúdos
 
-## *Discente: Maria Eduarda Santos Timiraos*
+Streamly é uma aplicação web para gerenciar suas assinaturas de streaming e catálogo de filmes/séries.
 
-<!-- Descrever um resumo sobre o trabalho. -->
+## Requisitos
 
-### Resumo
+- Node.js 18 ou superior
+- NPM ou Yarn
 
-  Um sistema web para organizar séries e filmes assistidos e controlar assinaturas de serviços de streaming. Os usuários poderão registrar conteúdos assistidos e acompanhar suas assinaturas, com foco em centralizar essas informações em um único local.
+## Instalação
 
-<!-- Apresentar o tema. -->
-### 1. Tema
+Clone o repositório e instale as dependências:
 
-  O trabalho final tem como tema o desenvolvimento de um Sistema de Gerenciamento de Assinaturas de Streamings, Séries e Filmes assistidos.
+```bash
+git clone https://github.com/seu-usuario/streamly.git
+cd streamly
+npm install
+```
 
-<!-- Descrever e limitar o escopo da aplicação. -->
-### 2. Escopo
+## Rodando o Projeto
 
-  Este projeto terá as seguintes funcionalidades: o cadastro e gerenciamento de séries/filmes e assinaturas, com funcionalidades básicas de CRUD e algumas integrações simples, como a exibição de listas e notificações de vencimento de assinaturas.
+A forma mais simples de iniciar o projeto com o banco de dados é usar o comando:
 
-<!-- Apresentar restrições de funcionalidades e de escopo. -->
-### 3. Restrições
+```bash
+npm run start-with-db
+```
 
-  Neste trabalho não serão considerados:
-  - Integrações automáticas com APIs de serviços de streaming, como Netflix ou Prime Video.
-  - Funcionalidades avançadas de recomendação de séries e filmes com base em preferências.
-  - Controle de múltiplos usuários na mesma conta.
+Este comando inicia o servidor Next.js e executa a migração do banco de dados automaticamente.
 
-<!-- Construir alguns protótipos para a aplicação, disponibilizá-los no Github e descrever o que foi considerado. //-->
-### 4. Protótipo
+Alternativamente, você pode executar os comandos separadamente:
 
-  Páginas a serem desenvolvidas: 
-  - Página Principal : Tela inicial com a listagem geral de séries e filmes cadastrados.
-  - Página de Assinaturas : Lista de assinaturas de serviços de streaming, com informações sobre custo mensal e dados de vencimento
-### 5. Referências
+1. Inicie o servidor de desenvolvimento:
+```bash
+npm run dev
+```
 
-  Até o presente momento, não foram utilizadas referências para o desenvolvimento deste trabalho.
+2. Em outro terminal, execute o script de migração:
+```bash
+npm run migrate-db
+```
+
+## Banco de Dados
+
+A aplicação utiliza SQLite como banco de dados, que é armazenado localmente em um arquivo `streamly.db`. 
+
+### Estrutura do Banco de Dados
+
+- **Assinaturas**: Armazena informações sobre serviços de streaming, jogos e música.
+- **Filmes/Séries**: Catálogo de conteúdos assistidos, em progresso ou planejados.
+- **Tags**: Sistema de categorização de conteúdos.
+
+### Reinicializar o Banco de Dados
+
+Para reinicializar o banco de dados, exclua o arquivo `streamly.db` na raiz do projeto e execute novamente:
+
+```bash
+npm run migrate-db
+```
+
+## Funcionalidades
+
+- 📺 Gerenciamento de assinaturas (Netflix, Amazon Prime, Disney+, etc.)
+- 🎬 Catálogo de filmes e séries
+- 📊 Dashboard com estatísticas e visualizações
+- 💰 Acompanhamento de gastos mensais
+- 📅 Alertas de vencimento de assinaturas
+- 🔍 Busca e filtragem de conteúdos
+
+## Tecnologias
+
+- Next.js
+- React
+- TypeScript
+- Tailwind CSS
+- SQLite
+- Drizzle ORM
+
+## Estrutura do Projeto
+
+```
+src/
+├── app/              # Páginas da aplicação (Next.js App Router)
+│   ├── api/          # Rotas de API
+│   └── ...           # Páginas da aplicação
+├── components/       # Componentes reutilizáveis
+├── db/               # Configuração do banco de dados
+│   ├── schema/       # Esquema do banco de dados
+│   └── queries/      # Consultas SQL
+├── lib/              # Bibliotecas e utilitários
+├── scripts/          # Scripts de inicialização e migração
+├── services/         # Serviços para comunicação com a API
+└── utils/            # Funções utilitárias
+```
+
+## Licença
+
+Este projeto está licenciado sob a licença MIT.
+
+## Getting Started
+
+First, run the development server:
+
+```bash
+npm run dev
+# or
+yarn dev
+# or
+pnpm dev
+# or
+bun dev
+```
+
+Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+
+You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+
+This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+
+## Learn More
+
+To learn more about Next.js, take a look at the following resources:
+
+- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
+- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+
+You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+
+## Deploy on Vercel
+
+The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+
+Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
