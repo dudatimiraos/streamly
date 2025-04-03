@@ -181,15 +181,15 @@ export default function FilmesSeriesPage() {
 
   return (
     <div className="flex flex-col gap-6">
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 text-white">
         <div>
           <h1 className="text-2xl font-bold">Filmes e Séries</h1>
-          <p className="text-gray-600">Gerencie seus filmes e séries favoritos</p>
+          <p className="text-gray-100">Gerencie seus filmes e séries favoritos</p>
         </div>
 
         <button
           onClick={() => setIsCreateModalOpen(true)}
-          className="flex items-center justify-center gap-2 bg-primary text-white py-2 px-4 rounded-md bg-blue-500 hover:bg-blue-600 transition-colors"
+          className="flex items-center justify-center gap-2 bg-primary text-white py-2 px-4 rounded-md bg-[#442b9e] hover:bg-[#442b9e]/80 transition-colors cursor-pointer"
         >
           <FaPlus />
           <span>Novo Conteúdo</span>
@@ -219,7 +219,7 @@ export default function FilmesSeriesPage() {
               <button
                 onClick={() => setFiltroStatus("todos")}
                 className={`px-3 py-1 rounded-full text-sm ${
-                  filtroStatus === "todos" ? "bg-primary text-white" : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+                  filtroStatus === "todos" ? "bg-primary" : "bg-gray-100 text-gray-700 hover:bg-gray-200"
                 }`}
               >
                 Todos
@@ -264,7 +264,7 @@ export default function FilmesSeriesPage() {
               <button
                 onClick={() => setFiltroTipo("todos")}
                 className={`px-3 py-1 rounded-full text-sm ${
-                  filtroTipo === "todos" ? "bg-primary text-white" : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+                  filtroTipo === "todos" ? "bg-primary" : "bg-gray-100 text-gray-700 hover:bg-gray-200"
                 }`}
               >
                 Todos

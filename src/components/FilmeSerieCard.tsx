@@ -89,40 +89,6 @@ export default function FilmeSerieCard({
           </div>
         )}
 
-        <div className="absolute top-2 right-2 z-10">
-          <button
-            className="p-2 bg-gray-800 bg-opacity-70 text-white rounded-full hover:bg-opacity-90"
-            onClick={() => setMenuOpen(!menuOpen)}
-          >
-            <FaEllipsisV size={14} />
-          </button>
-
-          {menuOpen && (
-            <div className="absolute right-0 mt-2 w-36 bg-white shadow-lg rounded-md overflow-hidden z-20">
-              <button
-                className="w-full flex items-center px-4 py-2 hover:bg-gray-100 text-sm text-left"
-                onClick={() => {
-                  onEdit(id);
-                  setMenuOpen(false);
-                }}
-              >
-                <FaEdit className="mr-2 text-primary" />
-                <span>Editar</span>
-              </button>
-              <button
-                className="w-full flex items-center px-4 py-2 hover:bg-gray-100 text-sm text-left"
-                onClick={() => {
-                  onDelete(id);
-                  setMenuOpen(false);
-                }}
-              >
-                <FaTrash className="mr-2 text-red-500" />
-                <span>Excluir</span>
-              </button>
-            </div>
-          )}
-        </div>
-
         <div className="absolute top-2 left-2">
           <span
             className={`text-xs font-semibold px-2 py-1 rounded-full ${
@@ -161,14 +127,14 @@ export default function FilmeSerieCard({
             <div className="flex space-x-1">
               <button
                 onClick={() => onEdit(id)}
-                className="p-1.5 bg-gray-100 rounded-full hover:bg-primary hover:text-white transition-colors"
+                className="p-1.5 bg-gray-100 rounded-full hover:bg-gray-400 hover:text-white transition-colors cursor-pointer"
                 title="Editar"
               >
                 <FaEdit size={14} />
               </button>
               <button
                 onClick={() => onDelete(id)}
-                className="p-1.5 bg-gray-100 rounded-full hover:bg-red-500 hover:text-white transition-colors"
+                className="p-1.5 bg-gray-100 rounded-full hover:bg-red-500 hover:text-white transition-colors cursor-pointer"
                 title="Excluir"
               >
                 <FaTrash size={14} />

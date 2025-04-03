@@ -20,6 +20,7 @@ export interface AssinaturaFormData {
   observacoes?: string;
   urlLogo?: string;
   dataContratacao?: string;
+  pagamento?: boolean;
 }
 
 export default function AssinaturaForm({ onSubmit, onCancel, initialData, isEditing = false }: AssinaturaFormProps) {
@@ -222,13 +223,13 @@ export default function AssinaturaForm({ onSubmit, onCancel, initialData, isEdit
         <button
           type="button"
           onClick={onCancel}
-          className="px-4 py-2 bg-gray-200 text-gray-800 rounded-md hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-300 flex items-center"
+          className="px-4 py-2 bg-gray-200 text-gray-800 rounded-md hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-300 flex items-center cursor-pointer"
         >
           <FaTimes className="mr-2" /> Cancelar
         </button>
         <button
           type="submit"
-          className="px-4 py-2 bg-primary text-white rounded-md bg-blue-500 hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 flex items-center"
+          className="px-4 py-2 bg-primary text-white rounded-md bg-[#442b9e] hover:bg-[#442b9e]/80 flex items-center cursor-pointer"
         >
           <FaSave className="mr-2" /> {isEditing ? "Atualizar" : "Salvar"}
         </button>

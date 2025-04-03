@@ -22,6 +22,7 @@ type AssinaturaCardProps = {
   categoria: string;
   ativo: boolean;
   urlLogo?: string;
+  pagamento?: boolean;
   onEdit?: (id: number) => void;
   onDelete?: (id: number) => void;
   onConfirmPayment?: (id: number) => void;
@@ -35,14 +36,22 @@ export default function AssinaturaCard({
   categoria,
   ativo,
   urlLogo,
+  pagamento = false,
   onEdit,
   onDelete,
   onConfirmPayment,
 }: AssinaturaCardProps) {
   const [menuOpen, setMenuOpen] = useState(false);
 
-  // Formatar data de vencimento
-  const dataFormatada = new Date(dataVencimento);
+  // Formatar data de vencimento - Corrigindo problema de fuso horário
+  // Abordagem 1: Garantir que a data seja tratada no horário local, não em UTC
+  const partes = dataVencimento.split("-"); // Separa ano, mês e dia
+  const dataFormatada = new Date(
+    parseInt(partes[0]), // ano
+    parseInt(partes[1]) - 1, // mês (0-11)
+    parseInt(partes[2]) // dia
+  );
+
   const dataVencimentoFormatada = format(dataFormatada, "dd 'de' MMMM", { locale: ptBR });
 
   // Data atual
@@ -119,7 +128,7 @@ export default function AssinaturaCard({
               className="w-8 h-8 flex items-center justify-center rounded-full hover:bg-gray-100"
               aria-label="Menu de ações"
             >
-              <FaEllipsisV className="text-gray-500" />
+              <FaEllipsisV className="text-[#442b9e]" />
             </button>
 
             {menuOpen && (
@@ -133,7 +142,7 @@ export default function AssinaturaCard({
                     }}
                     className="flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
                   >
-                    <FaEdit className="mr-2 text-blue-500" /> Editar
+                    <FaEdit className="mr-2 text-[#442b9e]" /> Editar
                   </button>
                 )}
 
@@ -192,6 +201,16 @@ export default function AssinaturaCard({
               <span className="text-sm">{isVencido ? "Assinatura vencida!" : "Vencimento próximo!"}</span>
             </div>
           )}
+
+          {/* Status de pagamento */}
+          <div
+            className={`mt-3 flex items-center p-2 rounded-md ${
+              pagamento ? "bg-green-100 text-green-700" : "bg-gray-100 text-gray-700"
+            }`}
+          >
+            <FaCreditCard className="mr-2" />
+            <span className="text-sm">{pagamento ? "Pagamento confirmado" : "Aguardando pagamento"}</span>
+          </div>
         </div>
 
         {/* Botões rápidos - alternativa ao menu */}
@@ -199,19 +218,19 @@ export default function AssinaturaCard({
           {onEdit && (
             <button
               onClick={() => onEdit(id)}
-              className="flex-1 bg-blue-100 text-blue-700 py-1 rounded-md hover:bg-blue-200 transition-colors flex items-center justify-center"
+              className="flex-1 bg-[#f5f5f5] py-1 rounded-md hover:bg-[#e0e0e0] transition-colors flex items-center justify-center cursor-pointer"
             >
               <FaEdit className="mr-1" /> Editar
             </button>
           )}
 
-          {onConfirmPayment && (
+          {onConfirmPayment && !pagamento && (
             <button
               onClick={() => onConfirmPayment(id)}
-              className="flex-1 bg-green-100 text-green-700 py-1 rounded-md hover:bg-green-200 transition-colors flex items-center justify-center"
+              className="flex-1 bg-green-100 text-green-700 py-1 rounded-md hover:bg-green-200 transition-colors flex items-center justify-center cursor-pointer"
               title="Confirmar pagamento"
             >
-              <FaCreditCard className="mr-1" /> Pagar
+              <FaCreditCard className="mr-1" /> Confirmar Pagamento
             </button>
           )}
         </div>

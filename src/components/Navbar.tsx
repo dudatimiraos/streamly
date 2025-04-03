@@ -19,11 +19,12 @@ export default function Navbar() {
   const isActive = (path: string) => pathname === path;
 
   return (
-    <nav className="bg-gradient-to-r from-[#1f8294] to-[#020024] shadow-md text-white">
+    <nav className="fixed top-0 left-0 right-0 z-50 bg-gradient-to-r from-[#1a3075] via-[#962ffc] to-[#9422a8] shadow-md text-white">
       <div className="container mx-auto px-4">
-        <div className="flex items-center justify-between h-16">
-          <div className="flex items-center">
-            <Link href="/" className="flex-shrink-0 font-bold text-xl">
+        <div className="flex items-center justify-between h-20">
+          <div className="flex items-center gap-4">
+            <img src="/logo-streamly.png" alt="Streamly" className="w-9 h-9" />
+            <Link href="/" className="flex-shrink-0 font-bold text-xl text-[#e728b7]">
               Streamly
             </Link>
           </div>
@@ -38,7 +39,7 @@ export default function Navbar() {
                     key={item.name}
                     href={item.href}
                     className={`flex items-center px-3 py-2 rounded-md text-sm font-medium ${
-                      isActive(item.href) ? "bg-gray-700" : "hover:bg-gray-600"
+                      isActive(item.href) ? "bg-gray-100/20" : "hover:bg-gray-200/20"
                     }`}
                   >
                     <Icon className="mr-2" />

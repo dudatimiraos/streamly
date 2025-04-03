@@ -6,6 +6,7 @@ import "./globals.css";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import DatabaseInitializer from "@/components/DatabaseInitializer";
+import VerificadorVencimentos from "@/components/VerificadorVencimentos";
 import { metadata } from "./metadata";
 
 const geistSans = Geist({
@@ -42,10 +43,13 @@ export default function RootLayout({
         <meta name="description" content={metadata.description as string} />
         <meta name="keywords" content={metadata.keywords as string} />
       </head>
-      <body className={`${geistSans.variable} ${geistMono.variable} antialiased bg-gray-200 min-h-screen flex flex-col`}>
+      <body
+        className={`${geistSans.variable} ${geistMono.variable} antialiased vsc-initialized bg-gray-950 min-h-screen flex flex-col`}
+      >
         {!isDatabaseInitialized && <DatabaseInitializer onInitialized={() => setIsDatabaseInitialized(true)} />}
+        {isDatabaseInitialized && <VerificadorVencimentos />}
         <Navbar />
-        <main className="flex-grow container mx-auto px-4 py-8">
+        <main className="flex-grow container mx-auto px-4 py-8 mt-20">
           {isDatabaseInitialized ? (
             children
           ) : (

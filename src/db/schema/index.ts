@@ -11,6 +11,7 @@ export const assinaturas = sqliteTable("assinaturas", {
   observacoes: text("observacoes"),
   urlLogo: text("url_logo"),
   dataContratacao: text("data_contratacao").notNull(),
+  pagamento: integer("pagamento", { mode: "boolean" }).default(false),
 });
 
 // Tabela de filmes e séries

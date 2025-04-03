@@ -6,6 +6,7 @@ import AssinaturaCard from "@/components/AssinaturaCard";
 import Modal from "@/components/Modal";
 import AssinaturaForm, { AssinaturaFormData } from "@/components/AssinaturaForm";
 import ConfirmationModal from "@/components/ConfirmationModal";
+import NotificacaoVencimento from "@/components/NotificacaoVencimento";
 import Link from "next/link";
 import { initDatabase } from "@/utils/db-init";
 import {
@@ -14,6 +15,9 @@ import {
   updateAssinatura,
   deleteAssinatura,
   getTotalCustoAssinaturas,
+  confirmarPagamentoAssinatura,
+  getAssinaturasProximasVencimento,
+  verificarAssinaturasVencidas,
 } from "@/services/assinaturas";
 
 interface Assinatura {
@@ -26,10 +30,12 @@ interface Assinatura {
   urlLogo?: string;
   observacoes?: string;
   dataContratacao: string;
+  pagamento: boolean;
 }
 
 export default function AssinaturasPage() {
   const [assinaturas, setAssinaturas] = useState<Assinatura[]>([]);
+  const [assinaturasAVencer, setAssinaturasAVencer] = useState<Assinatura[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [filtroCategoria, setFiltroCategoria] = useState<string>("todas");
   const [custoTotal, setCustoTotal] = useState<number>(0);
@@ -50,6 +56,9 @@ export default function AssinaturasPage() {
       await initDatabase();
 
       try {
+        // Verificar assinaturas vencidas e atualizar status de pagamento
+        await verificarAssinaturasVencidas();
+
         // Buscar assinaturas
         const assinaturasData = await getAllAssinaturas();
         setAssinaturas(assinaturasData);
@@ -57,6 +66,10 @@ export default function AssinaturasPage() {
         // Calcular custo total
         const total = await getTotalCustoAssinaturas();
         setCustoTotal(total);
+
+        // Verificar assinaturas próximas do vencimento (3 dias)
+        const proximasVencimento = await getAssinaturasProximasVencimento(3);
+        setAssinaturasAVencer(proximasVencimento);
       } catch (error) {
         console.error("Erro ao carregar assinaturas:", error);
       } finally {
@@ -79,6 +92,7 @@ export default function AssinaturasPage() {
         ...data,
         custoMensal: typeof data.custoMensal === "string" ? parseFloat(data.custoMensal) : data.custoMensal,
         dataContratacao: data.dataContratacao || new Date().toISOString().split("T")[0],
+        pagamento: false, // Inicialmente, o pagamento não está confirmado
       };
 
       const result = await createAssinatura(assinaturaData);
@@ -91,6 +105,10 @@ export default function AssinaturasPage() {
         // Atualizar custo total
         const total = await getTotalCustoAssinaturas();
         setCustoTotal(total);
+
+        // Verificar assinaturas próximas do vencimento
+        const proximasVencimento = await getAssinaturasProximasVencimento(3);
+        setAssinaturasAVencer(proximasVencimento);
       }
     } catch (error) {
       console.error("Erro ao criar assinatura:", error);
@@ -118,6 +136,10 @@ export default function AssinaturasPage() {
         // Atualizar custo total
         const total = await getTotalCustoAssinaturas();
         setCustoTotal(total);
+
+        // Verificar assinaturas próximas do vencimento
+        const proximasVencimento = await getAssinaturasProximasVencimento(3);
+        setAssinaturasAVencer(proximasVencimento);
       }
     } catch (error) {
       console.error("Erro ao atualizar assinatura:", error);
@@ -141,6 +163,10 @@ export default function AssinaturasPage() {
         // Atualizar custo total
         const total = await getTotalCustoAssinaturas();
         setCustoTotal(total);
+
+        // Verificar assinaturas próximas do vencimento
+        const proximasVencimento = await getAssinaturasProximasVencimento(3);
+        setAssinaturasAVencer(proximasVencimento);
       }
     } catch (error) {
       console.error("Erro ao excluir assinatura:", error);
@@ -154,19 +180,16 @@ export default function AssinaturasPage() {
     if (!selectedAssinatura) return;
 
     try {
-      // Aqui, atualizar a data de vencimento para um mês à frente
-      const dataAtual = new Date(selectedAssinatura.dataVencimento);
-      const novaData = new Date(dataAtual);
-      novaData.setMonth(novaData.getMonth() + 1);
-
-      const result = await updateAssinatura(selectedAssinatura.id, {
-        dataVencimento: novaData.toISOString().split("T")[0],
-      });
+      const result = await confirmarPagamentoAssinatura(selectedAssinatura.id);
 
       if (result) {
         // Recarregar lista de assinaturas
         const assinaturasData = await getAllAssinaturas();
         setAssinaturas(assinaturasData);
+
+        // Verificar assinaturas próximas do vencimento
+        const proximasVencimento = await getAssinaturasProximasVencimento(3);
+        setAssinaturasAVencer(proximasVencimento);
       }
     } catch (error) {
       console.error("Erro ao confirmar pagamento:", error);
@@ -176,24 +199,48 @@ export default function AssinaturasPage() {
     setSelectedAssinatura(null);
   };
 
+  // Handlers para assinaturas
+  const handleOpenEditModal = (id: number) => {
+    const assinatura = assinaturas.find((a) => a.id === id);
+    if (assinatura) {
+      setSelectedAssinatura(assinatura);
+      setIsEditModalOpen(true);
+    }
+  };
+
+  const handleOpenDeleteModal = (id: number) => {
+    const assinatura = assinaturas.find((a) => a.id === id);
+    if (assinatura) {
+      setSelectedAssinatura(assinatura);
+      setIsDeleteModalOpen(true);
+    }
+  };
+
+  const handleOpenPaymentModal = (id: number) => {
+    const assinatura = assinaturas.find((a) => a.id === id);
+    if (assinatura) {
+      setSelectedAssinatura(assinatura);
+      setIsPaymentModalOpen(true);
+    }
+  };
+
   return (
     <div className="flex flex-col gap-6">
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+      {/* Notificação de assinaturas a vencer */}
+      {assinaturasAVencer.length > 0 && (
+        <NotificacaoVencimento assinaturas={assinaturasAVencer} onConfirmPayment={handleOpenPaymentModal} />
+      )}
+
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 text-white">
         <div>
           <h1 className="text-2xl font-bold">Minhas Assinaturas</h1>
-          <p className="text-gray-600">Gerencie suas assinaturas de serviços de streaming e outros</p>
+          <p className="text-gray-100">Gerencie suas assinaturas de serviços de streaming e outros</p>
         </div>
 
         <div className="flex flex-col sm:flex-row gap-3">
-          <div className="flex items-center bg-white rounded-md shadow-sm p-2 text-gray-700">
-            <FaMoneyBillWave className="text-green-600 mr-2" />
-            <span className="font-medium">Total mensal: </span>
-            <span className="ml-1">{custoTotal.toLocaleString("pt-BR", { style: "currency", currency: "BRL" })}</span>
-          </div>
-
           <button
             onClick={() => setIsCreateModalOpen(true)}
-            className="flex items-center justify-center gap-2 bg-primary text-white py-2 px-4 rounded-md bg-[#1f8294] hover:bg-[#1f8294]/80 transition-colors cursor-pointer"
+            className="flex items-center justify-center gap-2 bg-primary text-white py-2 px-4 rounded-md bg-[#442b9e] hover:bg-[#442b9e]/80 transition-colors cursor-pointer"
           >
             <FaPlus />
             <span>Nova Assinatura</span>
@@ -201,55 +248,62 @@ export default function AssinaturasPage() {
         </div>
       </div>
 
-      <div className="bg-white p-4 rounded-md shadow-sm mb-4">
-        <div className="flex items-center mb-2">
-          <FaFilter className="text-gray-500 mr-2" />
-          <span className="font-medium">Filtrar por categoria:</span>
-        </div>
+      <div className="bg-white p-4 rounded-md shadow-sm mb-4 flex justify-between">
+        <div>
+          <div className="flex items-center mb-2">
+            <FaFilter className="text-gray-500 mr-2" />
+            <span className="font-medium">Filtrar por categoria:</span>
+          </div>
 
-        <div className="flex flex-wrap gap-2">
-          <button
-            onClick={() => setFiltroCategoria("todas")}
-            className={`px-3 py-1 rounded-full text-sm ${
-              filtroCategoria === "todas" ? "bg-primary text-white" : "bg-gray-100 text-gray-700 hover:bg-gray-200"
-            }`}
-          >
-            Todas
-          </button>
-          <button
-            onClick={() => setFiltroCategoria("streaming")}
-            className={`px-3 py-1 rounded-full text-sm ${
-              filtroCategoria === "streaming" ? "bg-red-600 text-white" : "bg-red-100 text-red-800 hover:bg-red-200"
-            }`}
-          >
-            Streaming
-          </button>
-          <button
-            onClick={() => setFiltroCategoria("musica")}
-            className={`px-3 py-1 rounded-full text-sm ${
-              filtroCategoria === "musica"
-                ? "bg-green-600 text-white"
-                : "bg-green-100 text-green-800 hover:bg-green-200"
-            }`}
-          >
-            Música
-          </button>
-          <button
-            onClick={() => setFiltroCategoria("jogos")}
-            className={`px-3 py-1 rounded-full text-sm ${
-              filtroCategoria === "jogos" ? "bg-blue-600 text-white" : "bg-blue-100 text-blue-800 hover:bg-blue-200"
-            }`}
-          >
-            Jogos
-          </button>
-          <button
-            onClick={() => setFiltroCategoria("outros")}
-            className={`px-3 py-1 rounded-full text-sm ${
-              filtroCategoria === "outros" ? "bg-gray-600 text-white" : "bg-gray-100 text-gray-800 hover:bg-gray-200"
-            }`}
-          >
-            Outros
-          </button>
+          <div className="flex flex-wrap gap-2">
+            <button
+              onClick={() => setFiltroCategoria("todas")}
+              className={`px-3 py-1 rounded-full text-sm ${
+                filtroCategoria === "todas" ? "bg-primary " : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+              }`}
+            >
+              Todas
+            </button>
+            <button
+              onClick={() => setFiltroCategoria("streaming")}
+              className={`px-3 py-1 rounded-full text-sm ${
+                filtroCategoria === "streaming" ? "bg-red-600 text-white" : "bg-red-100 text-red-800 hover:bg-red-200"
+              }`}
+            >
+              Streaming
+            </button>
+            <button
+              onClick={() => setFiltroCategoria("musica")}
+              className={`px-3 py-1 rounded-full text-sm ${
+                filtroCategoria === "musica"
+                  ? "bg-green-600 text-white"
+                  : "bg-green-100 text-green-800 hover:bg-green-200"
+              }`}
+            >
+              Música
+            </button>
+            <button
+              onClick={() => setFiltroCategoria("jogos")}
+              className={`px-3 py-1 rounded-full text-sm ${
+                filtroCategoria === "jogos" ? "bg-blue-600 text-white" : "bg-blue-100 text-blue-800 hover:bg-blue-200"
+              }`}
+            >
+              Jogos
+            </button>
+            <button
+              onClick={() => setFiltroCategoria("outros")}
+              className={`px-3 py-1 rounded-full text-sm ${
+                filtroCategoria === "outros" ? "bg-gray-600 text-white" : "bg-gray-100 text-gray-800 hover:bg-gray-200"
+              }`}
+            >
+              Outros
+            </button>
+          </div>
+        </div>
+        <div className="flex items-center bg-white p-2 text-gray-700 text-xl">
+          <FaMoneyBillWave className="text-green-600 mr-2" />
+          <span className="font-medium">Total mensal: </span>
+          <span className="ml-1">{custoTotal.toLocaleString("pt-BR", { style: "currency", currency: "BRL" })}</span>
         </div>
       </div>
 
@@ -269,6 +323,7 @@ export default function AssinaturasPage() {
               categoria={assinatura.categoria}
               ativo={assinatura.ativo}
               urlLogo={assinatura.urlLogo}
+              pagamento={assinatura.pagamento}
               onEdit={(id) => {
                 const assinaturaToEdit = assinaturas.find((a) => a.id === id);
                 if (assinaturaToEdit) {
@@ -358,7 +413,7 @@ export default function AssinaturasPage() {
         message={`Confirmar pagamento de ${selectedAssinatura?.custoMensal.toLocaleString("pt-BR", {
           style: "currency",
           currency: "BRL",
-        })} da assinatura "${selectedAssinatura?.nome}"? A data de vencimento será atualizada.`}
+        })} da assinatura "${selectedAssinatura?.nome}"? A data de vencimento será atualizada para o próximo mês.`}
         confirmText="Confirmar Pagamento"
         cancelText="Cancelar"
         type="payment"
